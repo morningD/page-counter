@@ -9,7 +9,7 @@ POST /v1/pageviews
 GET  /v1/pageviews?site={site}&path={path}
 ```
 
-The Worker validates the browser origin, site ID, and project path prefix before forwarding to a per-site Durable Object. It stores only a normalized page path, aggregate count, and update timestamp.
+The Worker validates the browser origin, site ID, and project path prefix before forwarding to a per-site Durable Object. It stores only a normalized page path, aggregate count, and update timestamp. `POST` increments both the requested path and the site's total count, then returns that site total; `GET` continues to read the requested path's own count.
 
 ## Add a project
 
@@ -22,7 +22,7 @@ Register a stable site ID in `src/config.ts`:
 }
 ```
 
-Each site receives a separate Durable Object instance. Query strings and URL fragments are not counted.
+Each site receives a separate Durable Object instance. Query strings and URL fragments are not counted. On the first total-count write after this feature is deployed, the Durable Object initializes the total from all existing path counts, so prior page-view history remains included.
 
 ## Local development
 
