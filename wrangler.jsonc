@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "page-counter",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-07-11",
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["PageCounter"]
+    }
+  ],
+  "durable_objects": {
+    "bindings": [
+      {
+        "class_name": "PageCounter",
+        "name": "PAGE_COUNTER"
+      }
+    ]
+  },
+  "observability": {
+    "enabled": true
+  }
+}
