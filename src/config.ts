@@ -8,6 +8,10 @@ export const SITES: Record<string, SiteConfig> = {
     origin: "https://morningd.github.io",
     pathPrefix: "/lang.csconf",
   },
+  "license-atlas": {
+    origin: "https://morningd.github.io",
+    pathPrefix: "/license.atlas",
+  },
 }
 
 const MAX_PATH_LENGTH = 512
