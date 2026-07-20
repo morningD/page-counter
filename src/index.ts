@@ -8,10 +8,35 @@ const ENDPOINT = "/v1/pageviews";
 const MAX_BODY_BYTES = 1024;
 
 async function requestData(request: Request): Promise<{ site: unknown; path: unknown } | null> {
-  const contentLength = Number(request.headers.get("Content-Length") ?? 0);
-  if (contentLength > MAX_BODY_BYTES) return null;
+  if (!request.body) return null;
+
+  const reader = request.body.getReader();
+  const chunks: Uint8Array[] = [];
+  let totalBytes = 0;
+
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+
+    totalBytes += value.byteLength;
+    if (totalBytes > MAX_BODY_BYTES) {
+      reader.cancel();
+      throw new Error("Request body too large");
+    }
+
+    chunks.push(value);
+  }
+
+  const combined = new Uint8Array(totalBytes);
+  let offset = 0;
+  for (const chunk of chunks) {
+    combined.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+
+  const text = new TextDecoder().decode(combined);
   try {
-    return await request.json();
+    return JSON.parse(text);
   } catch {
     return null;
   }
